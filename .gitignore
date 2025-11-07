@@ -1,0 +1,23 @@
+# Vim runtime directories
+vim/plugged/
+vim/autoload/
+*.swp
+*.swo
+*~
+
+# Backup directories
+.vim-backup-*/
+
+# Local overrides
+.vimrc.local
+
+# CoC
+.vim/coc-settings.json.bak
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.log
+.netrwhist
