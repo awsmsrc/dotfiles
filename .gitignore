@@ -8,8 +8,10 @@ vim/autoload/
 # Backup directories
 .vim-backup-*/
 
-# Local overrides
+# Local overrides (for sensitive/machine-specific settings)
 .vimrc.local
+.bashrc.local
+.zshrc.local
 
 # CoC
 .vim/coc-settings.json.bak
@@ -21,3 +23,14 @@ Thumbs.db
 # Temporary files
 *.log
 .netrwhist
+
+# Sensitive files (just in case)
+*_rsa
+*_rsa.pub
+*.pem
+*.key
+*.crt
+credentials
+.env
+.env.*
+!.env.example
