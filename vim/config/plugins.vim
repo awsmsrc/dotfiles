@@ -66,8 +66,14 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'ryanoasis/vim-devicons'
 
 " Color schemes
+" Classic themes
 Plug 'morhetz/gruvbox'
 Plug 'joshdick/onedark.vim'
+
+" Modern themes (2024-2025)
+Plug 'catppuccin/vim', { 'as': 'catppuccin' }
+Plug 'folke/tokyonight.nvim'
+Plug 'rebelot/kanagawa.nvim'
 
 " ----------------------------------------------------------------------------
 " Editing Enhancements
@@ -202,8 +208,8 @@ let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#formatter = 'unique_tail'
 
-" Theme
-let g:airline_theme='onedark'
+" Theme (will auto-match colorscheme if available)
+let g:airline_theme='catppuccin'
 
 " Show CoC status
 let g:airline#extensions#coc#enabled = 1
@@ -239,26 +245,41 @@ nnoremap <leader>i :IndentLinesToggle<CR>
 " Color Scheme
 " ----------------------------------------------------------------------------
 
-" Set colorscheme (choose one)
-try
-    " Try gruvbox first
-    colorscheme gruvbox
-    set background=dark
-    let g:gruvbox_contrast_dark = 'medium'
-catch
-    try
-        " Fall back to onedark
-        colorscheme onedark
-    catch
-        " Default to desert if neither is installed
-        colorscheme desert
-    endtry
-endtry
-
-" Enable true colors if available (better colors in modern terminals)
+" Enable true colors (needed for modern themes)
 if has('termguicolors')
     set termguicolors
 endif
+
+" Set colorscheme with fallbacks
+" To change theme, uncomment your preferred option or add to ~/.vimrc.local
+try
+    " Modern theme: Catppuccin Mocha (2024-2025 trending)
+    " Options: catppuccin, catppuccin-latte, catppuccin-frappe, catppuccin-macchiato, catppuccin-mocha
+    colorscheme catppuccin-mocha
+
+    " Alternative modern themes (uncomment to use):
+    " colorscheme tokyonight-night      " Deep blue, VS Code inspired
+    " colorscheme tokyonight-storm      " Softer blue variant
+    " colorscheme tokyonight-day        " Light theme
+    " colorscheme kanagawa-wave         " Japanese art inspired
+    " colorscheme kanagawa-dragon       " Darker variant
+    " colorscheme kanagawa-lotus        " Light variant
+catch
+    try
+        " Fallback to classic gruvbox
+        colorscheme gruvbox
+        set background=dark
+        let g:gruvbox_contrast_dark = 'medium'
+    catch
+        try
+            " Fallback to onedark
+            colorscheme onedark
+        catch
+            " Final fallback to built-in desert
+            colorscheme desert
+        endtry
+    endtry
+endtry
 
 " ----------------------------------------------------------------------------
 " vim-polyglot Settings

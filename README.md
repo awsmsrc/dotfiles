@@ -1,8 +1,21 @@
-# Modern Vim Dotfiles
+# Modern Dotfiles
 
-A clean, modular Vim configuration with IDE-like features for Go, JavaScript, Python, and Ruby development.
+A clean, modular configuration for Vim and shell with IDE-like features, modern themes, and a beautiful Starship prompt for Go, JavaScript, Python, and Ruby development.
 
 ## Features
+
+### Shell Prompt (Starship)
+
+- **Beautiful, Fast Prompt**
+  - Cross-shell support (bash and zsh)
+  - Git branch and status with file counts (!3 ?2 +1 for modified/untracked/staged)
+  - Smart directory truncation
+  - Language version displays (Go, Node, Python, Ruby)
+  - Command execution time
+  - Rich icons with Nerd Fonts
+  - Sub-50ms rendering speed
+
+### Vim Configuration
 
 - **File Navigation**
   - NERDTree for project tree browsing
@@ -29,10 +42,14 @@ A clean, modular Vim configuration with IDE-like features for Go, JavaScript, Py
   - Auto-pairs, commenting, surround text
   - Cross-platform clipboard support
 
-- **Modern UI**
-  - Airline status bar
+- **Modern UI & Themes**
+  - Trending 2024-2025 color schemes:
+    - **Catppuccin Mocha** (default) - Warm pastel palette
+    - **Tokyo Night** - Deep blue VS Code inspired
+    - **Kanagawa** - Japanese art inspired
+  - Classic themes: Gruvbox, OneDark
+  - Airline status bar with theme matching
   - File icons with Nerd Fonts
-  - Multiple color schemes (gruvbox, onedark)
   - Git diff indicators
 
 ## Prerequisites
@@ -69,11 +86,14 @@ cd dotfiles
 The install script will:
 1. Detect your platform (macOS/Linux/WSL)
 2. Check prerequisites
-3. Backup existing vim configuration
-4. Create symbolic links
-5. Install vim-plug and plugins
-6. Install CoC extensions
-7. Provide instructions for optional tools
+3. Backup existing configuration
+4. Create symbolic links for vim
+5. Optionally install shell configs (bashrc, zshrc, starship)
+6. Install vim-plug and plugins
+7. Install CoC extensions
+8. Provide instructions for optional tools
+
+**Note:** The shell configuration (bashrc, zshrc, starship) is optional during installation. The script will prompt you before replacing your existing shell configs.
 
 ### Manual Install
 
@@ -258,7 +278,10 @@ Leader key is set to `,` (comma)
 
 ```
 dotfiles/
-├── .vimrc                      # Main entry point (sources config files)
+├── .bashrc                     # Bash configuration with Starship
+├── .zshrc                      # Zsh configuration with Starship
+├── starship.toml               # Starship prompt configuration
+├── .vimrc                      # Main vim entry point
 ├── vim/
 │   └── config/
 │       ├── settings.vim        # Editor settings
@@ -272,17 +295,75 @@ dotfiles/
 
 ## Customization
 
-### Local Overrides
+### Changing Vim Color Scheme
 
-Create `~/.vimrc.local` for machine-specific settings that won't be tracked:
+The default theme is **Catppuccin Mocha**. To switch themes, edit `vim/config/plugins.vim` (line 258):
 
 ```vim
-" Example local overrides
-colorscheme desert
-let g:airline_theme='base16'
+" Choose one:
+colorscheme catppuccin-mocha      " Warm pastels (default)
+colorscheme catppuccin-latte      " Light variant
+colorscheme tokyonight-night      " Deep blue
+colorscheme tokyonight-storm      " Softer blue
+colorscheme kanagawa-wave         " Japanese art inspired
+colorscheme gruvbox               " Classic retro
+colorscheme onedark               " Atom-inspired
 ```
 
-### Adding Plugins
+Or create `~/.vimrc.local` for local overrides:
+
+```vim
+colorscheme tokyonight-night
+let g:airline_theme='tokyonight'
+```
+
+### Customizing Starship Prompt
+
+Edit `starship.toml` to customize your prompt. Common customizations:
+
+```toml
+# Change prompt character
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"
+
+# Customize git status symbols
+[git_status]
+modified = "M${count}"
+untracked = "U${count}"
+staged = "S${count}"
+
+# Show/hide directory truncation
+[directory]
+truncation_length = 5
+truncate_to_repo = false
+
+# Add more language displays
+[rust]
+symbol = " "
+format = "via [$symbol($version )]($style)"
+```
+
+See [Starship documentation](https://starship.rs/config/) for all options.
+
+### Shell Configuration
+
+If you didn't install shell configs during setup, you can add Starship to your existing shell configs:
+
+```bash
+# Add to ~/.bashrc or ~/.zshrc:
+eval "$(starship init bash)"   # for bash
+eval "$(starship init zsh)"    # for zsh
+
+# Then symlink the config:
+ln -sf ~/dotfiles/starship.toml ~/.config/starship.toml
+```
+
+### Local Overrides
+
+Create `~/.vimrc.local` or `~/.bashrc.local` / `~/.zshrc.local` for machine-specific settings that won't be tracked in git.
+
+### Adding Vim Plugins
 
 Edit `vim/config/plugins.vim`:
 
@@ -292,16 +373,6 @@ Plug 'tpope/vim-dispatch'
 ```
 
 Then run `:PlugInstall` in vim.
-
-### Changing Color Scheme
-
-Edit `vim/config/plugins.vim` (at the bottom):
-
-```vim
-colorscheme gruvbox  " or onedark, desert, etc.
-```
-
-Available schemes: gruvbox, onedark, desert (default)
 
 ### Custom Keybindings
 

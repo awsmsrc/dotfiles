@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
 # ============================================================================
-# Vim Dotfiles Installation Script
+# Dotfiles Installation Script
 # ============================================================================
 #
 # This script will:
 #   1. Detect your platform (macOS, Linux, WSL)
 #   2. Check for required dependencies
-#   3. Backup existing vim configuration
+#   3. Backup existing configuration
 #   4. Create symlinks to dotfiles
-#   5. Install vim-plug
-#   6. Install vim plugins
-#   7. Install CoC extensions
+#   5. Install vim-plug and vim plugins
+#   6. Install CoC extensions
+#   7. Optionally install shell configs (bashrc, zshrc, starship)
 #   8. Provide instructions for optional tools
 #
 # Usage:
@@ -179,6 +179,7 @@ backup_existing_config() {
 
     local backed_up=false
 
+    # Backup vim configs
     if [ -f "$HOME/.vimrc" ] || [ -L "$HOME/.vimrc" ]; then
         mkdir -p "$BACKUP_DIR"
         mv "$HOME/.vimrc" "$BACKUP_DIR/"
@@ -190,6 +191,28 @@ backup_existing_config() {
         mkdir -p "$BACKUP_DIR"
         mv "$HOME/.vim" "$BACKUP_DIR/"
         print_success "Backed up .vim/"
+        backed_up=true
+    fi
+
+    # Backup shell configs (only if they're symlinks to dotfiles)
+    if [ -L "$HOME/.bashrc" ]; then
+        mkdir -p "$BACKUP_DIR"
+        mv "$HOME/.bashrc" "$BACKUP_DIR/"
+        print_success "Backed up .bashrc"
+        backed_up=true
+    fi
+
+    if [ -L "$HOME/.zshrc" ]; then
+        mkdir -p "$BACKUP_DIR"
+        mv "$HOME/.zshrc" "$BACKUP_DIR/"
+        print_success "Backed up .zshrc"
+        backed_up=true
+    fi
+
+    if [ -L "$HOME/.config/starship.toml" ]; then
+        mkdir -p "$BACKUP_DIR"
+        mv "$HOME/.config/starship.toml" "$BACKUP_DIR/"
+        print_success "Backed up starship.toml"
         backed_up=true
     fi
 
@@ -207,20 +230,68 @@ backup_existing_config() {
 create_symlinks() {
     print_step "Creating symlinks..."
 
-    # Symlink .vimrc
+    # Vim configuration
     ln -sf "$DOTFILES_DIR/.vimrc" "$HOME/.vimrc"
     print_success "~/.vimrc -> $DOTFILES_DIR/.vimrc"
 
-    # Create .vim directory structure
     mkdir -p "$HOME/.vim"
-
-    # Symlink config directory
     ln -sf "$DOTFILES_DIR/vim/config" "$HOME/.vim/config"
     print_success "~/.vim/config -> $DOTFILES_DIR/vim/config"
 
-    # Symlink coc-settings.json
     ln -sf "$DOTFILES_DIR/coc-settings.json" "$HOME/.vim/coc-settings.json"
     print_success "~/.vim/coc-settings.json -> $DOTFILES_DIR/coc-settings.json"
+
+    # Shell configuration (optional - only if user wants to use dotfiles shell configs)
+    echo ""
+    print_step "Shell Configuration"
+    echo "Would you like to use the dotfiles shell configurations?"
+    echo "This will symlink .bashrc, .zshrc, and starship.toml"
+    echo ""
+    echo "⚠️  WARNING: This will replace your existing shell configs!"
+    echo "   Current configs will be backed up if they exist."
+    echo ""
+    read -p "Install shell configs? (y/N): " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        # Backup existing shell configs (non-symlink files)
+        if [ -f "$HOME/.bashrc" ] && [ ! -L "$HOME/.bashrc" ]; then
+            mkdir -p "$BACKUP_DIR"
+            mv "$HOME/.bashrc" "$BACKUP_DIR/"
+            print_success "Backed up existing .bashrc"
+        fi
+
+        if [ -f "$HOME/.zshrc" ] && [ ! -L "$HOME/.zshrc" ]; then
+            mkdir -p "$BACKUP_DIR"
+            mv "$HOME/.zshrc" "$BACKUP_DIR/"
+            print_success "Backed up existing .zshrc"
+        fi
+
+        # Create symlinks for shell configs
+        ln -sf "$DOTFILES_DIR/.bashrc" "$HOME/.bashrc"
+        print_success "~/.bashrc -> $DOTFILES_DIR/.bashrc"
+
+        ln -sf "$DOTFILES_DIR/.zshrc" "$HOME/.zshrc"
+        print_success "~/.zshrc -> $DOTFILES_DIR/.zshrc"
+
+        # Starship configuration
+        mkdir -p "$HOME/.config"
+        ln -sf "$DOTFILES_DIR/starship.toml" "$HOME/.config/starship.toml"
+        print_success "~/.config/starship.toml -> $DOTFILES_DIR/starship.toml"
+
+        echo ""
+        print_success "Shell configs installed!"
+        print_step "Run 'exec \$SHELL' or restart your terminal to see the new prompt"
+    else
+        print_warning "Skipping shell configs (you can run this script again later)"
+        echo ""
+        echo "To use Starship prompt without full shell config:"
+        echo "  1. Add this to your ~/.bashrc or ~/.zshrc:"
+        echo "     eval \"\$(starship init bash)\"  # for bash"
+        echo "     eval \"\$(starship init zsh)\"   # for zsh"
+        echo ""
+        echo "  2. Copy or symlink starship.toml:"
+        echo "     ln -sf $DOTFILES_DIR/starship.toml ~/.config/starship.toml"
+    fi
 }
 
 # ============================================================================
@@ -413,9 +484,9 @@ prompt_optional_tools() {
 # ============================================================================
 
 uninstall() {
-    print_step "Uninstalling vim dotfiles..."
+    print_step "Uninstalling dotfiles..."
 
-    # Remove symlinks
+    # Remove vim symlinks
     if [ -L "$HOME/.vimrc" ]; then
         rm "$HOME/.vimrc"
         print_success "Removed ~/.vimrc symlink"
@@ -429,6 +500,22 @@ uninstall() {
     if [ -L "$HOME/.vim/coc-settings.json" ]; then
         rm "$HOME/.vim/coc-settings.json"
         print_success "Removed ~/.vim/coc-settings.json symlink"
+    fi
+
+    # Remove shell config symlinks
+    if [ -L "$HOME/.bashrc" ]; then
+        rm "$HOME/.bashrc"
+        print_success "Removed ~/.bashrc symlink"
+    fi
+
+    if [ -L "$HOME/.zshrc" ]; then
+        rm "$HOME/.zshrc"
+        print_success "Removed ~/.zshrc symlink"
+    fi
+
+    if [ -L "$HOME/.config/starship.toml" ]; then
+        rm "$HOME/.config/starship.toml"
+        print_success "Removed ~/.config/starship.toml symlink"
     fi
 
     echo ""
