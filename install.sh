@@ -475,20 +475,10 @@ prompt_optional_tools() {
         echo ""
     fi
 
-    # kpoof
-    if ! command_exists kpoof; then
-        echo -e "${BLUE}kpoof (interactive kubernetes port-forward):${NC}"
-        case "$PLATFORM" in
-            macOS)
-                echo "  brew tap farmotive/k8s"
-                echo "  brew install kpoof"
-                ;;
-            Linux|WSL)
-                echo "  Download from: https://github.com/farmotive/kpoof"
-                ;;
-        esac
-        echo ""
-    fi
+    echo ""
+    echo -e "${BLUE}Kubernetes tools (kubectx, kubens, kpoof):${NC}"
+    echo "  Run: ./install-k8s.sh"
+    echo ""
 
     echo "Press Enter to continue..."
     read -r

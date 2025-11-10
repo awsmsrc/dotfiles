@@ -153,15 +153,25 @@ gem install solargraph
 # Fast search tools
 brew install ripgrep fd bat
 
-# Kubernetes tools
-brew tap farmotive/k8s
-brew install kpoof  # Interactive port-forward utility
-
 # Nerd Fonts (for icons)
 brew tap homebrew/cask-fonts
 brew install --cask font-fira-code-nerd-font
 brew install --cask font-hack-nerd-font
 ```
+
+### Kubernetes Tools
+
+For Kubernetes development, install kubectx, kubens, and kpoof:
+
+```bash
+cd ~/dotfiles
+./install-k8s.sh
+```
+
+This will install:
+- **kubectx** - Switch between kubectl contexts (clusters)
+- **kubens** - Switch between Kubernetes namespaces
+- **kpoof** - Interactive port-forward utility
 
 ### Linux/WSL
 
@@ -305,13 +315,15 @@ z plaid      # Jump to most frecent match
 | `k` | `kubectl` | Shorter kubectl |
 | `kc` | `kubectx` | Switch kubernetes contexts |
 | `kns` | `kubens` | Switch kubernetes namespaces |
-| `kpoof` | (install separately) | Interactive port-forward tool |
+| `kpoof` | (install via script) | Interactive port-forward tool |
 
-**kpoof** provides an interactive menu to select namespaces and pods for port-forwarding. Install it with:
+**Prerequisites:** These aliases require the tools to be installed. Run the Kubernetes installation script:
 ```bash
-brew tap farmotive/k8s
-brew install kpoof
+cd ~/dotfiles
+./install-k8s.sh
 ```
+
+This installs kubectx, kubens, and kpoof (interactive port-forward utility).
 
 ### AWS Alias
 
@@ -346,6 +358,7 @@ dotfiles/
 │       └── autocmds.vim        # File-type settings
 ├── coc-settings.json          # LSP configuration
 ├── install.sh                 # Installation script
+├── install-k8s.sh             # Kubernetes tools installer
 └── README.md                  # This file
 ```
 
