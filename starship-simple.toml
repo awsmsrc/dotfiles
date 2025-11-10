@@ -12,10 +12,8 @@
 # Timeout for commands (in milliseconds)
 command_timeout = 1000
 
-# Simple format without fancy Unicode
-format = """
-$username$hostname$directory$git_branch$git_status$golang$nodejs$python$ruby
-$character"""
+# Simple format without fancy Unicode (single-line)
+format = """$username$hostname$directory$git_branch$git_status$golang$nodejs$python$ruby$character"""
 
 # Continuation prompt
 continuation_prompt = "> "

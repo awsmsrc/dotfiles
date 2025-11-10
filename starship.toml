@@ -10,13 +10,9 @@
 # Timeout for commands (in milliseconds)
 command_timeout = 1000
 
-# Format string for the prompt
+# Format string for the prompt (single-line)
 # This defines the order and presence of modules
-# Note: Box-drawing characters (╭─╰─) require a Nerd Font
-# If they don't render, use starship-simple.toml instead
-format = """
-$username$hostname$directory$git_branch$git_status$golang$nodejs$python$ruby
-$character"""
+format = """$username$hostname$directory$git_branch$git_status$golang$nodejs$python$ruby$character"""
 
 # Continuation prompt (multi-line commands)
 continuation_prompt = "[∙](bright-black) "
