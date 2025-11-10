@@ -51,6 +51,10 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " Language Support
 " ----------------------------------------------------------------------------
 
+" Disable vim-go in polyglot (we're using fatih/vim-go for better Go support)
+" IMPORTANT: Must be set BEFORE loading vim-polyglot
+let g:polyglot_disabled = ['go']
+
 " Go development
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 
@@ -323,13 +327,6 @@ catch
         endtry
     endtry
 endtry
-
-" ----------------------------------------------------------------------------
-" vim-polyglot Settings
-" ----------------------------------------------------------------------------
-
-" Disable vim-go in polyglot (we're using fatih/vim-go)
-let g:polyglot_disabled = ['go']
 
 " ----------------------------------------------------------------------------
 " CoC Extensions (installed automatically)
