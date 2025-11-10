@@ -195,14 +195,19 @@ Leader key is set to `,` (comma)
 | `,b` | Buffer list | Switch between open files |
 | `,/` | Search in buffer | Find text in current file |
 
-### Window Navigation
+### Window/Split Navigation & Management
 
-| Key | Action |
-|-----|--------|
-| `Ctrl+h` | Move to left window |
-| `Ctrl+j` | Move to bottom window |
-| `Ctrl+k` | Move to top window |
-| `Ctrl+l` | Move to right window |
+| Key | Action | Description |
+|-----|--------|-------------|
+| `Ctrl+h` | Move to left window | Seamless vim+tmux navigation |
+| `Ctrl+j` | Move to bottom window | Seamless vim+tmux navigation |
+| `Ctrl+k` | Move to top window | Seamless vim+tmux navigation |
+| `Ctrl+l` | Move to right window | Seamless vim+tmux navigation |
+| `,m` | Toggle maximize | Zoom current split (restore with `,m` again) |
+| `Ctrl+e` | Resize mode | Enter interactive resize mode, use hjkl to resize |
+| `,=` | Equalize splits | Make all splits equal size |
+| `,-` | Maximize height | Maximize current split height |
+| `,\|` | Maximize width | Maximize current split width |
 
 ### Autocompletion (CoC)
 
@@ -411,6 +416,11 @@ autocmd FileType python nnoremap <F5> :!python %<CR>
 - [nerdtree-git-plugin](https://github.com/Xuyuanp/nerdtree-git-plugin) - Git status in NERDTree
 - [fzf.vim](https://github.com/junegunn/fzf.vim) - Fuzzy finder
 
+### Window/Split Management
+- [vim-tmux-navigator](https://github.com/christoomey/vim-tmux-navigator) - Seamless vim/tmux navigation
+- [vim-maximizer](https://github.com/szw/vim-maximizer) - Toggle maximize/restore splits
+- [winresizer](https://github.com/simeji/winresizer) - Interactive window resizing
+
 ### Autocompletion
 - [CoC.nvim](https://github.com/neoclide/coc.nvim) - LSP client
 
@@ -425,8 +435,11 @@ autocmd FileType python nnoremap <F5> :!python %<CR>
 ### UI
 - [vim-airline](https://github.com/vim-airline/vim-airline) - Status bar
 - [vim-devicons](https://github.com/ryanoasis/vim-devicons) - File icons
-- [gruvbox](https://github.com/morhetz/gruvbox) - Color scheme
-- [onedark.vim](https://github.com/joshdick/onedark.vim) - Color scheme
+- [Catppuccin](https://github.com/catppuccin/vim) - Modern color scheme (default)
+- [Tokyo Night](https://github.com/folke/tokyonight.nvim) - Deep blue theme
+- [Kanagawa](https://github.com/rebelot/kanagawa.nvim) - Japanese art inspired theme
+- [gruvbox](https://github.com/morhetz/gruvbox) - Classic retro theme
+- [onedark.vim](https://github.com/joshdick/onedark.vim) - Atom-inspired theme
 
 ### Editing
 - [auto-pairs](https://github.com/jiangmiao/auto-pairs) - Auto-close brackets

@@ -28,6 +28,19 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 
 " ----------------------------------------------------------------------------
+" Window/Split Management
+" ----------------------------------------------------------------------------
+
+" Seamless navigation between vim splits and tmux panes
+Plug 'christoomey/vim-tmux-navigator'
+
+" Toggle maximize/restore current split
+Plug 'szw/vim-maximizer'
+
+" Interactive window resizing
+Plug 'simeji/winresizer'
+
+" ----------------------------------------------------------------------------
 " Autocompletion & LSP
 " ----------------------------------------------------------------------------
 
@@ -240,6 +253,36 @@ let g:indentLine_char = '┊'
 
 " Toggle with <leader>i
 nnoremap <leader>i :IndentLinesToggle<CR>
+
+" ----------------------------------------------------------------------------
+" vim-tmux-navigator Settings
+" ----------------------------------------------------------------------------
+
+" Disable tmux navigator when zoomed in tmux
+let g:tmux_navigator_disable_when_zoomed = 1
+
+" No default mappings (we define our own in keybindings.vim)
+let g:tmux_navigator_no_mappings = 0
+
+" ----------------------------------------------------------------------------
+" vim-maximizer Settings
+" ----------------------------------------------------------------------------
+
+" No default key mapping (we define our own in keybindings.vim)
+let g:maximizer_set_default_mapping = 0
+
+" ----------------------------------------------------------------------------
+" winresizer Settings
+" ----------------------------------------------------------------------------
+
+" Start winresizer mode with Ctrl+e
+let g:winresizer_start_key = '<C-e>'
+
+" Use hjkl for resizing
+let g:winresizer_keycode_left = 'h'
+let g:winresizer_keycode_right = 'l'
+let g:winresizer_keycode_down = 'j'
+let g:winresizer_keycode_up = 'k'
 
 " ----------------------------------------------------------------------------
 " Color Scheme

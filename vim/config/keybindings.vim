@@ -53,6 +53,13 @@ nnoremap <leader>= <C-w>=
 nnoremap <leader>- <C-w>_
 nnoremap <leader>\| <C-w>\|
 
+" Toggle maximize/restore current split
+nnoremap <leader>m :MaximizerToggle<CR>
+vnoremap <leader>m :MaximizerToggle<CR>gv
+
+" Interactive resize mode (Ctrl+e, then use hjkl)
+" Configured via winresizer plugin settings
+
 " ============================================================================
 " Buffer Management
 " ============================================================================
