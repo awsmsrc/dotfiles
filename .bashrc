@@ -68,6 +68,7 @@ export PATH="$HOME/.asdf/shims:$PATH"
 alias k="kubectl"
 alias kc="kubectx"
 alias kns="kubens"
+# kpoof - install via: brew tap farmotive/k8s && brew install kpoof
 
 # AWS profile switcher
 alias awsprofile='export AWS_PROFILE=$(sed -n "s/\[profile \(.*\)\]/\1/gp" ~/.aws/config | grep -v "\-sso" | fzf)'

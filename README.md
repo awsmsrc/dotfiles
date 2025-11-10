@@ -153,6 +153,10 @@ gem install solargraph
 # Fast search tools
 brew install ripgrep fd bat
 
+# Kubernetes tools
+brew tap farmotive/k8s
+brew install kpoof  # Interactive port-forward utility
+
 # Nerd Fonts (for icons)
 brew tap homebrew/cask-fonts
 brew install --cask font-fira-code-nerd-font
@@ -278,6 +282,53 @@ Leader key is set to `,` (comma)
 | `,tf` | Run test function |
 | `,gr` | Run program |
 | `,gb` | Build program |
+
+## Shell Features & Aliases
+
+### Directory Navigation (z plugin)
+
+The **z plugin** (included in zsh plugins) tracks your frequently visited directories and lets you jump to them with fuzzy matching:
+
+```bash
+# After visiting ~/plaid/go.git/services/foo a few times:
+z foo        # Jumps to ~/plaid/go.git/services/foo
+z go ser     # Also works with partial matches
+z plaid      # Jump to most frecent match
+```
+
+**How it works:** z builds a database of directories you visit and ranks them by "frecency" (frequency + recency). The more you visit a directory, the easier it is to jump to it.
+
+### Kubernetes Aliases
+
+| Alias | Command | Description |
+|-------|---------|-------------|
+| `k` | `kubectl` | Shorter kubectl |
+| `kc` | `kubectx` | Switch kubernetes contexts |
+| `kns` | `kubens` | Switch kubernetes namespaces |
+| `kpoof` | (install separately) | Interactive port-forward tool |
+
+**kpoof** provides an interactive menu to select namespaces and pods for port-forwarding. Install it with:
+```bash
+brew tap farmotive/k8s
+brew install kpoof
+```
+
+### AWS Alias
+
+| Alias | Description |
+|-------|-------------|
+| `awsprofile` | Interactive AWS profile switcher using fzf |
+
+### Git Aliases
+
+| Alias | Command | Description |
+|-------|---------|-------------|
+| `gs` | `git status` | Show status |
+| `ga` | `git add` | Add files |
+| `gc` | `git commit` | Commit changes |
+| `gp` | `git push` | Push to remote |
+| `gl` | `git log --oneline --graph --decorate` | Pretty log |
+| `gd` | `git diff` | Show diff |
 
 ## Configuration Structure
 
