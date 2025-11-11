@@ -74,6 +74,10 @@ nnoremap <leader>bd :bdelete<CR>
 " List buffers
 nnoremap <leader>bl :buffers<CR>
 
+" Arrow key navigation for buffers
+nnoremap <Left> :bprevious<CR>
+nnoremap <Right> :bnext<CR>
+
 " ============================================================================
 " Tab Management
 " ============================================================================
@@ -87,6 +91,14 @@ nnoremap <leader>tc :tabclose<CR>
 " Next/previous tab
 nnoremap <leader>tj :tabnext<CR>
 nnoremap <leader>tk :tabprevious<CR>
+
+" Arrow key navigation for tabs
+nnoremap <Up> :tabprevious<CR>
+nnoremap <Down> :tabnext<CR>
+
+" Leader + arrow keys for tab creation/deletion
+nnoremap <leader><Up> :tabnew<CR>
+nnoremap <leader><Down> :tabclose<CR>
 
 " ============================================================================
 " NERDTree
