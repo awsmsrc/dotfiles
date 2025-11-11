@@ -461,6 +461,48 @@ install_ripgrep() {
 }
 
 # ============================================================================
+# Install tree (directory listing utility)
+# ============================================================================
+
+install_tree() {
+    print_step "Installing tree..."
+
+    if command_exists tree; then
+        print_success "tree already installed ($(tree --version | head -n1))"
+        return
+    fi
+
+    case "$PLATFORM" in
+        macOS)
+            if command_exists brew; then
+                brew install tree
+                print_success "tree installed via Homebrew"
+            else
+                print_warning "Homebrew not found. Install tree manually:"
+                echo "  brew install tree"
+            fi
+            ;;
+        Linux|WSL)
+            if command_exists apt-get; then
+                sudo apt-get update && sudo apt-get install -y tree
+                print_success "tree installed via apt"
+            elif command_exists yum; then
+                sudo yum install -y tree
+                print_success "tree installed via yum"
+            else
+                print_warning "Package manager not found. Install tree manually:"
+                echo "  sudo apt-get install tree"
+                echo "  or"
+                echo "  sudo yum install tree"
+            fi
+            ;;
+        *)
+            print_warning "Unknown platform. Install tree manually for directory listing support"
+            ;;
+    esac
+}
+
+# ============================================================================
 # Install Optional Tools
 # ============================================================================
 
@@ -577,6 +619,7 @@ main() {
     install_vim_plugins
     install_coc_extensions
     install_ripgrep
+    install_tree
 
     echo ""
     echo "============================================================================"
