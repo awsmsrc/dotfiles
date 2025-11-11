@@ -1,3 +1,5 @@
+.claude/
+
 # Vim runtime directories
 vim/plugged/
 vim/autoload/
