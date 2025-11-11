@@ -1,327 +1,49 @@
-# ============================================================================
-# Starship Configuration
-# ============================================================================
-#
-# Modern, cross-shell prompt with git integration
-# Documentation: https://starship.rs/config/
-#
-# ============================================================================
-
 # Timeout for commands (in milliseconds)
 command_timeout = 1000
 
-# Format string for the prompt (single-line)
-# This defines the order and presence of modules
-format = """$username$hostname$directory$git_branch$git_status$golang$nodejs$python$ruby$character"""
+format = """
+[░▒▓](#a3aed2)\
+[ $os ](bg:#a3aed2 fg:#090c0c)\
+[](bg:#769ff0 fg:#a3aed2)\
+$directory\
+[](fg:#769ff0 bg:#394260)\
+$git_branch\
+$git_status\
+[](fg:#394260 bg:#1d2230)\
+$time\
+[ ](fg:#1d2230)\
+\n$character"""
 
-# Continuation prompt (multi-line commands)
-continuation_prompt = "[∙](bright-black) "
+[directory]
+style = "fg:#e3e5e5 bg:#769ff0"
+format = "[ $path ]($style)"
+truncation_length = 0
+truncate_to_repo = false
 
-# ============================================================================
-# Character (the prompt symbol)
-# ============================================================================
+[git_branch]
+symbol = ""
+style = "bg:#394260"
+format = '[[ $symbol $branch ](fg:#769ff0 bg:#394260)]($style)'
+
+[git_status]
+style = "bg:#394260"
+format = '[[($all_status$ahead_behind )](fg:#769ff0 bg:#394260)]($style)'
+
+[time]
+disabled = false
+time_format = "%R"
+style = "bg:#1d2230"
+format = '[[  $time ](fg:#a0a9cb bg:#1d2230)]($style)'
+
+[os]
+disabled = false
+style = "bg:#a3aed2 fg:#090c0c"
+
+[os.symbols]
+Macos = ""
+Linux = ""
+Windows = "󰖳"
 
 [character]
 success_symbol = "[➜](bold green)"
 error_symbol = "[➜](bold red)"
-vimcmd_symbol = "[←](bold green)"
-
-# ============================================================================
-# Username
-# ============================================================================
-
-[username]
-show_always = false
-format = "[$user]($style) "
-style_user = "bold cyan"
-style_root = "bold red"
-
-# ============================================================================
-# Hostname
-# ============================================================================
-
-[hostname]
-ssh_only = true
-format = "on [$hostname]($style) "
-style = "bold yellow"
-disabled = false
-
-# ============================================================================
-# Directory
-# ============================================================================
-
-[directory]
-truncation_length = 3
-truncate_to_repo = true
-format = "[$path]($style)[$read_only]($read_only_style) "
-style = "bold cyan"
-read_only = " 🔒"
-read_only_style = "red"
-truncation_symbol = "…/"
-
-# Special directory replacements
-[directory.substitutions]
-"Documents" = "󰈙 "
-"Downloads" = " "
-"Music" = " "
-"Pictures" = " "
-"plaid" = " "
-"dotfiles" = " "
-
-# ============================================================================
-# Git Branch
-# ============================================================================
-
-[git_branch]
-symbol = " "
-format = "on [$symbol$branch(:$remote_branch)]($style) "
-style = "bold purple"
-truncation_length = 30
-truncation_symbol = "…"
-only_attached = false
-
-# ============================================================================
-# Git Status (shows file change counts)
-# ============================================================================
-
-[git_status]
-format = '([\[$all_status$ahead_behind\]]($style) )'
-style = "bold red"
-conflicted = "🏳 "
-ahead = "⇡${count}"
-behind = "⇣${count}"
-diverged = "⇕⇡${ahead_count}⇣${behind_count}"
-up_to_date = ""
-untracked = "?${count}"
-stashed = "$${count}"
-modified = "!${count}"
-staged = "+${count}"
-renamed = "»${count}"
-deleted = "✘${count}"
-
-# ============================================================================
-# Git Commit
-# ============================================================================
-
-[git_commit]
-commit_hash_length = 7
-tag_symbol = "🏷  "
-tag_disabled = false
-only_detached = true
-
-# ============================================================================
-# Git State (rebase, merge, cherry-pick, etc.)
-# ============================================================================
-
-[git_state]
-format = '\([$state( $progress_current/$progress_total)]($style)\) '
-style = "bright-black"
-rebase = "REBASING"
-merge = "MERGING"
-revert = "REVERTING"
-cherry_pick = "CHERRY-PICKING"
-bisect = "BISECTING"
-am = "AM"
-am_or_rebase = "AM/REBASE"
-
-# ============================================================================
-# Programming Languages
-# ============================================================================
-
-# Go
-[golang]
-symbol = " "
-format = "via [$symbol($version )]($style)"
-style = "bold cyan"
-detect_extensions = ["go"]
-detect_files = ["go.mod", "go.sum"]
-detect_folders = []
-
-# Node.js
-[nodejs]
-symbol = " "
-format = "via [$symbol($version )]($style)"
-style = "bold green"
-detect_extensions = ["js", "mjs", "cjs", "ts", "tsx"]
-detect_files = ["package.json", ".node-version", ".nvmrc"]
-detect_folders = ["node_modules"]
-
-# Python
-[python]
-symbol = " "
-format = 'via [${symbol}${pyenv_prefix}(${version} )(\($virtualenv\) )]($style)'
-style = "bold yellow"
-pyenv_version_name = false
-detect_extensions = ["py"]
-detect_files = [".python-version", "Pipfile", "requirements.txt", "pyproject.toml"]
-detect_folders = []
-
-# Ruby
-[ruby]
-symbol = " "
-format = "via [$symbol($version )]($style)"
-style = "bold red"
-detect_extensions = ["rb"]
-detect_files = ["Gemfile", ".ruby-version"]
-detect_folders = []
-
-# Rust
-[rust]
-symbol = " "
-format = "via [$symbol($version )]($style)"
-style = "bold red"
-detect_extensions = ["rs"]
-detect_files = ["Cargo.toml"]
-detect_folders = []
-
-# ============================================================================
-# Tools & Environments
-# ============================================================================
-
-# Docker
-[docker_context]
-symbol = " "
-format = "via [$symbol$context]($style) "
-style = "blue bold"
-only_with_files = true
-detect_files = ["docker-compose.yml", "Dockerfile"]
-
-# Kubernetes
-[kubernetes]
-symbol = "☸ "
-format = 'on [$symbol$context( \($namespace\))]($style) '
-style = "cyan bold"
-disabled = false
-detect_files = ["k8s"]
-detect_folders = ["k8s"]
-[kubernetes.context_aliases]
-"dev.local.cluster.k8s" = "dev"
-
-# AWS
-[aws]
-symbol = "  "
-format = 'on [$symbol($profile )(\($region\) )]($style)'
-style = "bold yellow"
-disabled = false
-[aws.region_aliases]
-us-east-1 = "use1"
-
-# ============================================================================
-# Package Version
-# ============================================================================
-
-[package]
-symbol = "📦 "
-format = "via [$symbol$version]($style) "
-style = "208 bold"
-display_private = false
-disabled = false
-
-# ============================================================================
-# Command Duration
-# ============================================================================
-
-[cmd_duration]
-min_time = 2_000  # Show duration for commands that take longer than 2s
-format = "took [$duration]($style) "
-style = "bold yellow"
-show_milliseconds = false
-show_notifications = false
-
-# ============================================================================
-# Time
-# ============================================================================
-
-[time]
-disabled = true
-format = "at [$time]($style) "
-style = "bold yellow"
-time_format = "%T"
-utc_time_offset = "local"
-
-# ============================================================================
-# Battery
-# ============================================================================
-
-[battery]
-full_symbol = "🔋"
-charging_symbol = "⚡"
-discharging_symbol = "💀"
-disabled = true
-
-[[battery.display]]
-threshold = 15
-style = "bold red"
-
-[[battery.display]]
-threshold = 50
-style = "bold yellow"
-
-# ============================================================================
-# Status (exit code of last command)
-# ============================================================================
-
-[status]
-format = "[$symbol$status]($style) "
-symbol = "✖"
-success_symbol = ""
-not_executable_symbol = "🚫"
-not_found_symbol = "🔍"
-sigint_symbol = "🧱"
-signal_symbol = "⚡"
-style = "bold red"
-disabled = false
-
-# ============================================================================
-# Memory Usage
-# ============================================================================
-
-[memory_usage]
-disabled = true
-threshold = 75
-format = "via $symbol [${ram_pct}]($style) "
-style = "bold dimmed white"
-symbol = " "
-
-# ============================================================================
-# Jobs (background jobs)
-# ============================================================================
-
-[jobs]
-symbol = "✦"
-style = "bold blue"
-number_threshold = 1
-symbol_threshold = 1
-format = "[$symbol$number]($style) "
-
-# ============================================================================
-# Shell
-# ============================================================================
-
-[shell]
-disabled = true
-format = "[$indicator]($style) "
-bash_indicator = "bsh"
-fish_indicator = "fsh"
-zsh_indicator = "zsh"
-style = "cyan bold"
-
-# ============================================================================
-# Line Break
-# ============================================================================
-
-[line_break]
-disabled = false
-
-# ============================================================================
-# Custom Modules (examples)
-# ============================================================================
-
-# Example: Show if inside a Git worktree
-[custom.git_worktree]
-disabled = true
-command = "git rev-parse --is-inside-work-tree 2>/dev/null"
-when = 'git rev-parse --is-inside-work-tree 2>/dev/null'
-symbol = " "
-style = "bold blue"
-format = "[$symbol]($style)"

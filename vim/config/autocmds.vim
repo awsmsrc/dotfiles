@@ -22,11 +22,13 @@ augroup ReloadVimrc
     autocmd BufWritePost ~/.vimrc source ~/.vimrc
 augroup END
 
-" Highlight yanked text briefly
-augroup HighlightYank
-    autocmd!
-    autocmd TextYankPost * silent! lua vim.highlight.on_yank {higroup="IncSearch", timeout=300}
-augroup END
+" Highlight yanked text briefly (Neovim only)
+if has('nvim')
+    augroup HighlightYank
+        autocmd!
+        autocmd TextYankPost * silent! lua vim.highlight.on_yank {higroup="IncSearch", timeout=300}
+    augroup END
+endif
 
 " Auto-create directories when saving new files
 augroup AutoMkdir

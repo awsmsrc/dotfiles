@@ -32,13 +32,15 @@ set showmatch
 " Enable 256 colors
 set t_Co=256
 
-" Color scheme (install gruvbox, onedark, etc. for better themes)
-set background=dark
-try
-    colorscheme desert
-catch
-    " Fallback to default if colorscheme not found
-endtry
+" Note: Color scheme is loaded in plugins.vim after plug#end()
+" Fallback if plugins didn't load
+if !exists('g:colors_name')
+    set background=dark
+    try
+        colorscheme desert
+    catch
+    endtry
+endif
 
 " ============================================================================
 " Editor Behavior

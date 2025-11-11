@@ -6,9 +6,9 @@
 " Leader Key
 " ============================================================================
 
-" Set leader key to comma (easy to reach)
-let mapleader = ","
-let g:mapleader = ","
+" Set leader key to backtick (easy to reach)
+let mapleader = "`"
+let g:mapleader = "`"
 
 " ============================================================================
 " Core Remappings
@@ -93,6 +93,7 @@ nnoremap <leader>tk :tabprevious<CR>
 " ============================================================================
 
 " Toggle NERDTree
+nnoremap <leader>e :NERDTreeToggle<CR>
 nnoremap <leader>n :NERDTreeToggle<CR>
 
 " Find current file in NERDTree
@@ -213,8 +214,8 @@ nnoremap <silent> <leader>cd :<C-u>CocList diagnostics<cr>
 " Git status
 nnoremap <leader>gs :Git<CR>
 
-" Git diff
-nnoremap <leader>gd :Gdiffsplit<CR>
+" Git diff (using gD to avoid conflict with vim-go's gd in Go files)
+nnoremap <leader>gD :Gdiffsplit<CR>
 
 " Git blame
 nnoremap <leader>gb :Git blame<CR>

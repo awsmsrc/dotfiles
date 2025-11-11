@@ -12,8 +12,9 @@
 # Timeout for commands (in milliseconds)
 command_timeout = 1000
 
-# Simple format without fancy Unicode (single-line)
-format = """$username$hostname$directory$git_branch$git_status$golang$nodejs$python$ruby$character"""
+# Simple format (multi-line, no fancy Unicode)
+format = """$directory$git_branch$git_status
+$character"""
 
 # Continuation prompt
 continuation_prompt = "> "
@@ -25,40 +26,18 @@ continuation_prompt = "> "
 [character]
 success_symbol = "[>](bold green)"
 error_symbol = "[>](bold red)"
-vimcmd_symbol = "[<](bold green)"
-
-# ============================================================================
-# Username
-# ============================================================================
-
-[username]
-show_always = false
-format = "[$user]($style) "
-style_user = "bold cyan"
-style_root = "bold red"
-
-# ============================================================================
-# Hostname
-# ============================================================================
-
-[hostname]
-ssh_only = true
-format = "on [$hostname]($style) "
-style = "bold yellow"
-disabled = false
 
 # ============================================================================
 # Directory
 # ============================================================================
 
 [directory]
-truncation_length = 3
-truncate_to_repo = true
-format = "[$path]($style)[$read_only]($read_only_style) "
+truncation_length = 0
+truncate_to_repo = false
+format = "[$path]($style) "
 style = "bold cyan"
 read_only = " [RO]"
 read_only_style = "red"
-truncation_symbol = "../"
 
 # ============================================================================
 # Git Branch
@@ -66,107 +45,25 @@ truncation_symbol = "../"
 
 [git_branch]
 symbol = "git:"
-format = "on [$symbol$branch(:$remote_branch)]($style) "
+format = "on [$symbol$branch]($style) "
 style = "bold purple"
 truncation_length = 30
 truncation_symbol = "..."
-only_attached = false
 
 # ============================================================================
-# Git Status (shows file change counts)
+# Git Status
 # ============================================================================
 
 [git_status]
-format = '([\[$all_status$ahead_behind\]]($style) )'
+format = '([OK](bold green) )([$all_status$ahead_behind](bold red) )'
 style = "bold red"
 conflicted = "CONFLICT "
 ahead = "^${count}"
 behind = "v${count}"
 diverged = "^${ahead_count}v${behind_count}"
-up_to_date = ""
 untracked = "?${count}"
-stashed = "$${count}"
+stashed = "*${count}"
 modified = "!${count}"
 staged = "+${count}"
 renamed = ">>${count}"
 deleted = "X${count}"
-
-# ============================================================================
-# Programming Languages
-# ============================================================================
-
-# Go
-[golang]
-symbol = "go:"
-format = "via [$symbol($version )]($style)"
-style = "bold cyan"
-detect_extensions = ["go"]
-detect_files = ["go.mod", "go.sum"]
-
-# Node.js
-[nodejs]
-symbol = "node:"
-format = "via [$symbol($version )]($style)"
-style = "bold green"
-detect_extensions = ["js", "mjs", "cjs", "ts", "tsx"]
-detect_files = ["package.json", ".node-version", ".nvmrc"]
-
-# Python
-[python]
-symbol = "py:"
-format = 'via [$symbol${pyenv_prefix}(${version} )(\($virtualenv\) )]($style)'
-style = "bold yellow"
-pyenv_version_name = false
-detect_extensions = ["py"]
-detect_files = [".python-version", "Pipfile", "requirements.txt", "pyproject.toml"]
-
-# Ruby
-[ruby]
-symbol = "rb:"
-format = "via [$symbol($version )]($style)"
-style = "bold red"
-detect_extensions = ["rb"]
-detect_files = ["Gemfile", ".ruby-version"]
-
-# ============================================================================
-# Docker
-# ============================================================================
-
-[docker_context]
-symbol = "docker:"
-format = "via [$symbol$context]($style) "
-style = "blue bold"
-only_with_files = true
-detect_files = ["docker-compose.yml", "Dockerfile"]
-
-# ============================================================================
-# Kubernetes
-# ============================================================================
-
-[kubernetes]
-symbol = "k8s:"
-format = 'on [$symbol$context( \($namespace\))]($style) '
-style = "cyan bold"
-disabled = false
-detect_files = ["k8s"]
-detect_folders = ["k8s"]
-
-# ============================================================================
-# AWS
-# ============================================================================
-
-[aws]
-symbol = "aws:"
-format = 'on [$symbol($profile )(\($region\) )]($style)'
-style = "bold yellow"
-disabled = false
-
-# ============================================================================
-# Command Duration
-# ============================================================================
-
-[cmd_duration]
-min_time = 2_000
-format = "took [$duration]($style) "
-style = "bold yellow"
-show_milliseconds = false

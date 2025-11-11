@@ -15,6 +15,9 @@ endif
 
 call plug#begin('~/.vim/plugged')
 
+" Disable CoC globally by default (will enable per-buffer for code files only)
+let g:coc_start_at_startup = 0
+
 " ----------------------------------------------------------------------------
 " File Navigation
 " ----------------------------------------------------------------------------
@@ -124,6 +127,18 @@ Plug 'google/vim-searchindex'
 call plug#end()
 
 " ============================================================================
+" Color Scheme (loaded immediately after plug#end)
+" ============================================================================
+
+" Enable true colors
+if has('termguicolors')
+    set termguicolors
+endif
+
+" Set colorscheme (note: underscore not hyphen!)
+colorscheme catppuccin_macchiato
+
+" ============================================================================
 " Plugin Configuration
 " ============================================================================
 
@@ -225,8 +240,10 @@ let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#formatter = 'unique_tail'
 
-" Theme (will auto-match colorscheme if available)
-let g:airline_theme='catppuccin'
+" Theme (auto-detect from colorscheme)
+" Available themes: dark, light, gruvbox, onedark, nord, etc.
+" Leave unset to auto-detect from colorscheme
+" let g:airline_theme='dark'
 
 " Show CoC status
 let g:airline#extensions#coc#enabled = 1
@@ -289,46 +306,19 @@ let g:winresizer_keycode_down = 'j'
 let g:winresizer_keycode_up = 'k'
 
 " ----------------------------------------------------------------------------
-" Color Scheme
+" CoC Settings
 " ----------------------------------------------------------------------------
 
-" Enable true colors (needed for modern themes)
-if has('termguicolors')
-    set termguicolors
-endif
-
-" Set colorscheme with fallbacks
-" To change theme, uncomment your preferred option or add to ~/.vimrc.local
-try
-    " Modern theme: Catppuccin Mocha (2024-2025 trending)
-    " Options: catppuccin, catppuccin-latte, catppuccin-frappe, catppuccin-macchiato, catppuccin-mocha
-    colorscheme catppuccin-mocha
-
-    " Alternative modern themes (uncomment to use):
-    " colorscheme tokyonight-night      " Deep blue, VS Code inspired
-    " colorscheme tokyonight-storm      " Softer blue variant
-    " colorscheme tokyonight-day        " Light theme
-    " colorscheme kanagawa-wave         " Japanese art inspired
-    " colorscheme kanagawa-dragon       " Darker variant
-    " colorscheme kanagawa-lotus        " Light variant
-catch
-    try
-        " Fallback to classic gruvbox
-        colorscheme gruvbox
-        set background=dark
-        let g:gruvbox_contrast_dark = 'medium'
-    catch
-        try
-            " Fallback to onedark
-            colorscheme onedark
-        catch
-            " Final fallback to built-in desert
-            colorscheme desert
-        endtry
-    endtry
-endtry
+" Start CoC for code files only (not NERDTree, help, etc.)
+augroup CocStart
+    autocmd!
+    autocmd BufEnter * if &buftype ==# '' && bufname('%') !~ '^\(NERD_tree\|__\)' && &filetype !=# 'nerdtree' | silent! CocStart | endif
+augroup END
 
 " ----------------------------------------------------------------------------
+" Note: Color scheme is configured above after plug#end()
+" ----------------------------------------------------------------------------
+
 " CoC Extensions (installed automatically)
 " ----------------------------------------------------------------------------
 
