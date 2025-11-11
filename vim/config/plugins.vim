@@ -15,8 +15,8 @@ endif
 
 call plug#begin('~/.vim/plugged')
 
-" Disable CoC globally by default (will enable per-buffer for code files only)
-let g:coc_start_at_startup = 0
+" Enable CoC at startup
+let g:coc_start_at_startup = 1
 
 " ----------------------------------------------------------------------------
 " File Navigation
@@ -309,11 +309,8 @@ let g:winresizer_keycode_up = 'k'
 " CoC Settings
 " ----------------------------------------------------------------------------
 
-" Start CoC for code files only (not NERDTree, help, etc.)
-augroup CocStart
-    autocmd!
-    autocmd BufEnter * if &buftype ==# '' && bufname('%') !~ '^\(NERD_tree\|__\)' && &filetype !=# 'nerdtree' | silent! CocStart | endif
-augroup END
+" CoC starts automatically now (g:coc_start_at_startup = 1)
+" workspace.ignoredFiletypes in coc-settings.json prevents CoC in NERDTree
 
 " ----------------------------------------------------------------------------
 " Note: Color scheme is configured above after plug#end()

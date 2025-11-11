@@ -36,16 +36,28 @@ augroup AutoMkdir
     autocmd BufWritePre * if !isdirectory(expand("<afile>:p:h")) | call mkdir(expand("<afile>:p:h"), "p") | endif
 augroup END
 
-" Remove trailing whitespace on save (for specific file types)
+" Ensure final newline function
+function! EnsureFinalNewline()
+    " Save cursor and register
+    let l:save_cursor = getpos('.')
+    let l:save_reg = @/
+
+    " Remove all trailing blank lines
+    silent! %s#\n\+\%$##e
+
+    " Restore
+    let @/ = l:save_reg
+    call setpos('.', l:save_cursor)
+endfunction
+
+" Remove trailing whitespace and ensure final newline on save
 augroup TrimWhitespace
     autocmd!
-    autocmd BufWritePre *.go,*.py,*.js,*.jsx,*.ts,*.tsx,*.rb,*.java,*.c,*.cpp,*.h :%s/\s\+$//e
+    " Remove trailing whitespace from all lines
+    autocmd BufWritePre *.go,*.py,*.js,*.jsx,*.ts,*.tsx,*.rb,*.java,*.c,*.cpp,*.h,*.yaml,*.yml :%s/\s\+$//e
+    " Remove trailing blank lines
+    autocmd BufWritePre *.go,*.py,*.js,*.jsx,*.ts,*.tsx,*.rb,*.java,*.c,*.cpp,*.h,*.yaml,*.yml call EnsureFinalNewline()
 augroup END
-
-" ============================================================================
-" Go Files
-" ============================================================================
-
 augroup GoSettings
     autocmd!
 
@@ -86,6 +98,9 @@ augroup JavaScriptSettings
     " Tab settings (2 spaces is common in JS/TS)
     autocmd FileType javascript,javascriptreact,typescript,typescriptreact setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2
 
+    " Ensure files end with a newline
+    autocmd FileType javascript,javascriptreact,typescript,typescriptreact setlocal fixendofline endofline
+
     " Format on save with Prettier (via CoC)
     autocmd FileType javascript,javascriptreact,typescript,typescriptreact let b:coc_format_on_save = 1
 
@@ -105,6 +120,9 @@ augroup PythonSettings
 
     " Tab settings (4 spaces per PEP 8)
     autocmd FileType python setlocal expandtab tabstop=4 shiftwidth=4 softtabstop=4
+
+    " Ensure files end with a newline
+    autocmd FileType python setlocal fixendofline endofline
 
     " Max line length indicator at column 88 (Black formatter default)
     autocmd FileType python setlocal colorcolumn=88
@@ -129,6 +147,9 @@ augroup RubySettings
     " Tab settings (2 spaces is Ruby standard)
     autocmd FileType ruby setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2
 
+    " Ensure files end with a newline
+    autocmd FileType ruby setlocal fixendofline endofline
+
     " Max line length indicator at column 120
     autocmd FileType ruby setlocal colorcolumn=120
 
@@ -149,6 +170,9 @@ augroup JSONSettings
     " Tab settings (2 spaces)
     autocmd FileType json setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2
 
+    " Ensure files end with a newline
+    autocmd FileType json setlocal fixendofline endofline
+
     " Format on save
     autocmd FileType json let b:coc_format_on_save = 1
 
@@ -166,7 +190,11 @@ augroup YAMLSettings
     " Tab settings (2 spaces)
     autocmd FileType yaml setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2
 
-    " Prevent auto-indentation issues
+    " Ensure files end with a newline
+    autocmd FileType yaml setlocal fixendofline endofline
+
+    " Disable ALL auto-indentation
+    autocmd FileType yaml setlocal noautoindent nosmartindent nocindent indentexpr=
     autocmd FileType yaml setlocal indentkeys-=<:>
 augroup END
 
@@ -247,6 +275,9 @@ augroup CSettings
 
     " Tab settings (4 spaces or tabs depending on project)
     autocmd FileType c,cpp setlocal expandtab tabstop=4 shiftwidth=4 softtabstop=4
+
+    " Ensure files end with a newline
+    autocmd FileType c,cpp setlocal fixendofline endofline
 
     " Max line length indicator at column 100
     autocmd FileType c,cpp setlocal colorcolumn=100

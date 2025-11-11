@@ -82,23 +82,6 @@
   "go.goplsEnv": {
     "GOFLAGS": "-tags=test"
   },
-  "languageserver": {
-    "golang": {
-      "command": "gopls",
-      "rootPatterns": [
-        "go.mod",
-        ".vim/",
-        ".git/",
-        ".hg/"
-      ],
-      "filetypes": [
-        "go"
-      ],
-      "initializationOptions": {
-        "usePlaceholders": true
-      }
-    }
-  },
   "solargraph.diagnostics": true,
   "solargraph.formatting": true,
   "solargraph.hover": true,
