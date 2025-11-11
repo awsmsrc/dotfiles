@@ -81,11 +81,6 @@ alias gp='git push'
 alias gl='git log --oneline --graph --decorate'
 alias gd='git diff'
 
-# Safer file operations
-alias rm='rm -i'
-alias cp='cp -i'
-alias mv='mv -i'
-
 # Better ls (if eza is installed, use it)
 if command -v eza &> /dev/null; then
     alias ls='eza'
