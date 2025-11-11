@@ -11,8 +11,9 @@
 #   4. Create symlinks to dotfiles
 #   5. Install vim-plug and vim plugins
 #   6. Install CoC extensions
-#   7. Optionally install shell configs (bashrc, zshrc, starship)
-#   8. Provide instructions for optional tools
+#   7. Install ripgrep (required for :Rg search in vim)
+#   8. Optionally install shell configs (bashrc, zshrc, starship)
+#   9. Provide instructions for optional tools
 #
 # Usage:
 #   ./install.sh           Install dotfiles
@@ -418,6 +419,48 @@ prompt_nerd_fonts() {
 }
 
 # ============================================================================
+# Install Ripgrep (required for :Rg search in vim)
+# ============================================================================
+
+install_ripgrep() {
+    print_step "Installing ripgrep..."
+
+    if command_exists rg; then
+        print_success "ripgrep already installed ($(rg --version | head -n1))"
+        return
+    fi
+
+    case "$PLATFORM" in
+        macOS)
+            if command_exists brew; then
+                brew install ripgrep
+                print_success "ripgrep installed via Homebrew"
+            else
+                print_warning "Homebrew not found. Install ripgrep manually:"
+                echo "  brew install ripgrep"
+            fi
+            ;;
+        Linux|WSL)
+            if command_exists apt-get; then
+                sudo apt-get update && sudo apt-get install -y ripgrep
+                print_success "ripgrep installed via apt"
+            elif command_exists yum; then
+                sudo yum install -y ripgrep
+                print_success "ripgrep installed via yum"
+            else
+                print_warning "Package manager not found. Install ripgrep manually:"
+                echo "  sudo apt-get install ripgrep"
+                echo "  or"
+                echo "  sudo yum install ripgrep"
+            fi
+            ;;
+        *)
+            print_warning "Unknown platform. Install ripgrep manually for :Rg search support"
+            ;;
+    esac
+}
+
+# ============================================================================
 # Install Optional Tools
 # ============================================================================
 
@@ -426,22 +469,6 @@ prompt_optional_tools() {
     echo ""
     echo "Install these tools for enhanced functionality:"
     echo ""
-
-    # ripgrep
-    if ! command_exists rg; then
-        echo -e "${BLUE}ripgrep (fast search):${NC}"
-        case "$PLATFORM" in
-            macOS)
-                echo "  brew install ripgrep"
-                ;;
-            Linux|WSL)
-                echo "  sudo apt-get install ripgrep"
-                echo "  or"
-                echo "  sudo yum install ripgrep"
-                ;;
-        esac
-        echo ""
-    fi
 
     # fd
     if ! command_exists fd; then
@@ -549,6 +576,7 @@ main() {
     install_vim_plug
     install_vim_plugins
     install_coc_extensions
+    install_ripgrep
 
     echo ""
     echo "============================================================================"
@@ -576,7 +604,9 @@ main() {
     echo ""
     echo "Key features:"
     echo "  - Use ; instead of : for commands"
-    echo "  - <leader>n to toggle NERDTree"
+    echo "  - Leader key is \` (backtick)"
+    echo "  - \`e to toggle NERDTree"
+    echo "  - \`f for project-wide text search (ripgrep)"
     echo "  - <Ctrl-p> for fuzzy file search"
     echo "  - gd to go to definition"
     echo "  - K to show documentation"

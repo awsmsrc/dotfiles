@@ -52,6 +52,16 @@ augroup GoSettings
     " Tab settings (Go uses tabs)
     autocmd FileType go setlocal noexpandtab tabstop=4 shiftwidth=4 softtabstop=4
 
+    " Whitespace rules (per go.git .editorconfig)
+    autocmd FileType go setlocal fileencoding=utf-8    " UTF-8 encoding
+    autocmd FileType go setlocal fileformat=unix        " Unix line endings (LF)
+    autocmd FileType go setlocal endofline              " Ensure final newline
+    autocmd FileType go setlocal fixendofline           " Add final newline if missing
+
+    " Show whitespace characters for Go files
+    autocmd FileType go setlocal list                   " Show invisible characters
+    autocmd FileType go setlocal listchars=tab:\ \ ,trail:·,extends:›,precedes:‹,nbsp:␣
+
     " Show function signature and type info
     autocmd FileType go setlocal updatetime=100
 
