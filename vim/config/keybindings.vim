@@ -6,9 +6,13 @@
 " Leader Key
 " ============================================================================
 
-" Set leader key to backtick (easy to reach)
-let mapleader = "`"
-let g:mapleader = "`"
+" Set leader key to backslash (vim default)
+let mapleader = "\\"
+let g:mapleader = "\\"
+
+" Map backtick to also work as leader key
+nmap ` <leader>
+vmap ` <leader>
 
 " ============================================================================
 " Core Remappings

@@ -119,3 +119,5 @@ fi
 if [ -f ~/.zshrc.local ]; then
     source ~/.zshrc.local
 fi
+export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+export PATH="$HOME/.local/bin:$PATH"

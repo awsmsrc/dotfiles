@@ -140,3 +140,5 @@ fi
 if [ -f ~/.bashrc.local ]; then
     source ~/.bashrc.local
 fi
+export PATH="$HOME/.local/bin:$PATH"
+export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin

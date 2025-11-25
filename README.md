@@ -54,27 +54,32 @@ A clean, modular configuration for Vim and shell with IDE-like features, modern 
 
 ## Prerequisites
 
-### Required
+### Minimal Requirements
 
-- **Vim 8.1+** (for CoC.nvim support)
-- **Git**
-- **curl**
+- **Git** (to clone this repository)
+- **curl** (for downloading components)
+- **sudo access** (for package installation)
 
-### Recommended
+**That's it!** The install script automatically installs everything else:
+- Vim 8.1+
+- Zsh (set as default shell)
+- Oh My Zsh (with useful plugins)
+- Starship prompt
+- Node.js 20.x LTS
+- Python 3
+- Go 1.21+
+- fzf, ripgrep, tree, fd, bat
+- gopls (Go language server)
+- All vim plugins and CoC extensions
 
-- **Node.js 16+** (required for CoC.nvim autocompletion)
-- **Python 3.6+** (for some plugins)
+### Optional (Manual Installation)
 
-### Optional (for enhanced functionality)
-
-- **ripgrep** (rg) - Fast text search in fzf
-- **fd** - Fast file finder
-- **bat** - Better file previews
-- **Nerd Font** - File icons in NERDTree
+- **Nerd Font** - For file icons in NERDTree (see installation section below)
+- **Additional language servers** - For TypeScript, Python, Ruby support
 
 ## Installation
 
-### Quick Install
+### Quick Install (Fully Automated)
 
 ```bash
 cd ~
@@ -83,17 +88,22 @@ cd dotfiles
 ./install.sh
 ```
 
-The install script will:
-1. Detect your platform (macOS/Linux/WSL)
-2. Check prerequisites
-3. Backup existing configuration
-4. Create symbolic links for vim
-5. Optionally install shell configs (bashrc, zshrc, starship)
-6. Install vim-plug and plugins
-7. Install CoC extensions
-8. Provide instructions for optional tools
+The install script automatically:
+1. Detects your platform (macOS/Linux/WSL)
+2. **Installs Zsh, Oh My Zsh, and sets Zsh as default shell**
+3. **Installs Starship prompt** (modern, fast prompt with git info)
+4. **Installs all required tools**: Node.js, Python3, Go, fzf, ripgrep, tree, fd, bat
+5. **Installs gopls** (Go language server)
+6. Backs up existing configuration
+7. Creates symbolic links for vim and shell configs
+8. Configures git merge tool
+9. Installs vim-plug and all plugins
+10. Installs CoC extensions
+11. Configures PATH for all installed tools
 
-**Note:** The shell configuration (bashrc, zshrc, starship) is optional during installation. The script will prompt you before replacing your existing shell configs.
+**After Installation:** Restart your terminal to activate Zsh and all PATH changes.
+
+**Note:** The shell configuration (zshrc, starship) installation is optional. The script will prompt you before replacing your existing shell configs.
 
 ### Manual Install
 
@@ -147,17 +157,26 @@ gem install solargraph
 
 ## Optional Tools Installation
 
-### macOS (using Homebrew)
+**Note:** The install script now automatically installs ripgrep, fd, and bat. You only need to manually install Nerd Fonts and Kubernetes tools.
+
+### Nerd Fonts (for file icons)
+
+#### macOS (using Homebrew)
 
 ```bash
-# Fast search tools
-brew install ripgrep fd bat
-
-# Nerd Fonts (for icons)
 brew tap homebrew/cask-fonts
 brew install --cask font-fira-code-nerd-font
 brew install --cask font-hack-nerd-font
 ```
+
+#### Linux/WSL
+
+Download from [nerdfonts.com](https://www.nerdfonts.com/font-downloads) and install:
+- Fira Code Nerd Font
+- Hack Nerd Font
+- Or any other Nerd Font of your choice
+
+Then configure your terminal to use the Nerd Font.
 
 ### Kubernetes Tools
 
@@ -172,18 +191,6 @@ This will install:
 - **kubectx** - Switch between kubectl contexts (clusters)
 - **kubens** - Switch between Kubernetes namespaces
 - **kpoof** - Interactive port-forward utility
-
-### Linux/WSL
-
-```bash
-# Ubuntu/Debian
-sudo apt-get install ripgrep fd-find bat
-
-# Fedora/RHEL
-sudo yum install ripgrep fd-find bat
-```
-
-For Nerd Fonts, download from [nerdfonts.com](https://www.nerdfonts.com/font-downloads)
 
 ## Key Mappings
 

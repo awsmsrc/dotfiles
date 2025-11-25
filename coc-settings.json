@@ -101,5 +101,8 @@
   "snippets.ultisnips.directories": [
     "UltiSnips",
     "~/.vim/UltiSnips"
-  ]
+  ],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  }
 }

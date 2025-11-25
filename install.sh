@@ -9,11 +9,12 @@
 #   2. Check for required dependencies
 #   3. Backup existing configuration
 #   4. Create symlinks to dotfiles
-#   5. Install vim-plug and vim plugins
-#   6. Install CoC extensions
-#   7. Install ripgrep (required for :Rg search in vim)
-#   8. Optionally install shell configs (bashrc, zshrc, starship)
-#   9. Provide instructions for optional tools
+#   5. Configure git to use vim as default merge tool
+#   6. Install vim-plug and vim plugins
+#   7. Install CoC extensions
+#   8. Install ripgrep (required for :Rg search in vim)
+#   9. Optionally install shell configs (bashrc, zshrc, starship)
+#  10. Provide instructions for optional tools
 #
 # Usage:
 #   ./install.sh           Install dotfiles
@@ -296,6 +297,28 @@ create_symlinks() {
 }
 
 # ============================================================================
+# Configure Git Merge Tool
+# ============================================================================
+
+configure_git_merge_tool() {
+    print_step "Configuring git merge tool..."
+
+    # Set vimdiff as the default merge tool
+    git config --global merge.tool vimdiff
+
+    # Don't prompt before launching merge tool
+    git config --global mergetool.prompt false
+
+    # Don't keep backup files (.orig) after successful merge
+    git config --global mergetool.keepBackup false
+
+    # Configure vimdiff merge tool command
+    git config --global mergetool.vimdiff.cmd 'vim -d $LOCAL $REMOTE $MERGED -c '\''$wincmd w'\'' -c '\''wincmd J'\'''
+
+    print_success "Git configured to use vim as merge tool"
+}
+
+# ============================================================================
 # Install vim-plug
 # ============================================================================
 
@@ -351,17 +374,10 @@ install_coc_extensions() {
 # ============================================================================
 
 prompt_language_servers() {
-    print_step "Language Server Installation"
+    print_step "Additional Language Servers (Optional)"
     echo ""
-    echo "For full autocompletion support, install these language servers:"
+    echo "For additional language support, you can install these language servers:"
     echo ""
-
-    # Go
-    if command_exists go; then
-        echo -e "${BLUE}Go (gopls):${NC}"
-        echo "  go install golang.org/x/tools/gopls@latest"
-        echo ""
-    fi
 
     # JavaScript/TypeScript
     if command_exists npm; then
@@ -384,6 +400,8 @@ prompt_language_servers() {
         echo ""
     fi
 
+    echo "Note: gopls (Go) has already been installed automatically."
+    echo ""
     echo "Press Enter to continue..."
     read -r
 }
@@ -503,54 +521,512 @@ install_tree() {
 }
 
 # ============================================================================
+# Install Zsh
+# ============================================================================
+
+install_zsh() {
+    print_step "Installing Zsh..."
+
+    if command_exists zsh; then
+        print_success "Zsh already installed ($(zsh --version))"
+        return
+    fi
+
+    case "$PLATFORM" in
+        macOS)
+            if command_exists brew; then
+                brew install zsh
+                print_success "Zsh installed via Homebrew"
+            else
+                print_warning "Homebrew not found. Install Zsh manually:"
+                echo "  brew install zsh"
+            fi
+            ;;
+        Linux|WSL)
+            if command_exists apt-get; then
+                sudo apt-get update && sudo apt-get install -y zsh
+                print_success "Zsh installed via apt"
+            elif command_exists yum; then
+                sudo yum install -y zsh
+                print_success "Zsh installed via yum"
+            else
+                print_warning "Package manager not found. Install Zsh manually"
+            fi
+            ;;
+        *)
+            print_warning "Unknown platform. Install Zsh manually"
+            ;;
+    esac
+}
+
+# ============================================================================
+# Install Oh My Zsh
+# ============================================================================
+
+install_oh_my_zsh() {
+    print_step "Installing Oh My Zsh..."
+
+    if [ -d "$HOME/.oh-my-zsh" ]; then
+        print_success "Oh My Zsh already installed"
+        return
+    fi
+
+    # Install Oh My Zsh (non-interactive mode)
+    RUNZSH=no KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+
+    print_success "Oh My Zsh installed"
+}
+
+# ============================================================================
+# Set Zsh as default shell
+# ============================================================================
+
+set_zsh_as_default() {
+    if ! command_exists zsh; then
+        print_warning "Zsh not installed, skipping default shell setup"
+        return
+    fi
+
+    # Check if zsh is already the default shell
+    if [ "$SHELL" = "$(which zsh)" ]; then
+        print_success "Zsh is already the default shell"
+        return
+    fi
+
+    print_step "Setting Zsh as default shell..."
+
+    # Get the path to zsh
+    ZSH_PATH=$(which zsh)
+
+    # Check if zsh is in /etc/shells
+    if ! grep -q "$ZSH_PATH" /etc/shells 2>/dev/null; then
+        print_step "Adding $ZSH_PATH to /etc/shells..."
+        echo "$ZSH_PATH" | sudo tee -a /etc/shells >/dev/null
+    fi
+
+    # Change default shell
+    if chsh -s "$ZSH_PATH"; then
+        print_success "Default shell changed to Zsh"
+        print_warning "You'll need to log out and back in (or restart your terminal) for the change to take effect"
+    else
+        print_error "Failed to change default shell"
+        echo "You can manually change it later with: chsh -s $(which zsh)"
+    fi
+}
+
+# ============================================================================
+# Install Node.js (required for CoC.nvim)
+# ============================================================================
+
+install_nodejs() {
+    print_step "Installing Node.js..."
+
+    if command_exists node; then
+        NODE_VERSION=$(node --version | grep -oP '\d+' | head -n1)
+        if [ "$NODE_VERSION" -ge 16 ]; then
+            print_success "Node.js already installed ($(node --version))"
+            return
+        else
+            print_warning "Node.js version is too old ($(node --version)), upgrading..."
+        fi
+    fi
+
+    case "$PLATFORM" in
+        macOS)
+            if command_exists brew; then
+                brew install node
+                print_success "Node.js installed via Homebrew"
+            else
+                print_warning "Homebrew not found. Install Node.js manually:"
+                echo "  brew install node"
+            fi
+            ;;
+        Linux|WSL)
+            if command_exists apt-get; then
+                # Install Node.js 20.x LTS
+                curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+                sudo apt-get install -y nodejs
+                print_success "Node.js installed via NodeSource"
+            elif command_exists yum; then
+                # Install Node.js 20.x LTS
+                curl -fsSL https://rpm.nodesource.com/setup_20.x | sudo bash -
+                sudo yum install -y nodejs
+                print_success "Node.js installed via NodeSource"
+            else
+                print_warning "Package manager not found. Install Node.js manually"
+            fi
+            ;;
+        *)
+            print_warning "Unknown platform. Install Node.js manually"
+            ;;
+    esac
+}
+
+# ============================================================================
+# Install Python3 (recommended for plugins)
+# ============================================================================
+
+install_python() {
+    print_step "Installing Python3..."
+
+    if command_exists python3; then
+        print_success "Python3 already installed ($(python3 --version))"
+        return
+    fi
+
+    case "$PLATFORM" in
+        macOS)
+            if command_exists brew; then
+                brew install python3
+                print_success "Python3 installed via Homebrew"
+            else
+                print_warning "Homebrew not found. Install Python3 manually:"
+                echo "  brew install python3"
+            fi
+            ;;
+        Linux|WSL)
+            if command_exists apt-get; then
+                sudo apt-get update && sudo apt-get install -y python3 python3-pip
+                print_success "Python3 installed via apt"
+            elif command_exists yum; then
+                sudo yum install -y python3 python3-pip
+                print_success "Python3 installed via yum"
+            else
+                print_warning "Package manager not found. Install Python3 manually"
+            fi
+            ;;
+        *)
+            print_warning "Unknown platform. Install Python3 manually"
+            ;;
+    esac
+}
+
+# ============================================================================
+# Install Go (for vim-go)
+# ============================================================================
+
+install_go() {
+    print_step "Installing Go..."
+
+    if command_exists go; then
+        print_success "Go already installed ($(go version | grep -oP 'go\d+\.\d+\.\d+'))"
+        return
+    fi
+
+    case "$PLATFORM" in
+        macOS)
+            if command_exists brew; then
+                brew install go
+                print_success "Go installed via Homebrew"
+            else
+                print_warning "Homebrew not found. Install Go manually:"
+                echo "  brew install go"
+            fi
+            ;;
+        Linux|WSL)
+            # Install latest Go version
+            GO_VERSION="1.21.5"
+            GO_TARBALL="go${GO_VERSION}.linux-amd64.tar.gz"
+
+            print_step "Downloading Go ${GO_VERSION}..."
+            cd /tmp
+            curl -LO "https://go.dev/dl/${GO_TARBALL}"
+
+            print_step "Installing Go to /usr/local/go..."
+            sudo rm -rf /usr/local/go
+            sudo tar -C /usr/local -xzf "$GO_TARBALL"
+            rm "$GO_TARBALL"
+
+            # Add Go to PATH if not already there
+            if ! grep -q "/usr/local/go/bin" "$HOME/.bashrc" 2>/dev/null; then
+                echo 'export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin' >> "$HOME/.bashrc"
+            fi
+            if ! grep -q "/usr/local/go/bin" "$HOME/.zshrc" 2>/dev/null; then
+                echo 'export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin' >> "$HOME/.zshrc"
+            fi
+
+            export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+
+            print_success "Go installed to /usr/local/go"
+            print_warning "Run 'source ~/.bashrc' or restart your terminal to update PATH"
+            ;;
+        *)
+            print_warning "Unknown platform. Install Go manually from https://go.dev/dl/"
+            ;;
+    esac
+}
+
+# ============================================================================
+# Install Starship prompt
+# ============================================================================
+
+install_starship() {
+    print_step "Installing Starship prompt..."
+
+    if command_exists starship; then
+        print_success "Starship already installed ($(starship --version | head -n1))"
+        return
+    fi
+
+    case "$PLATFORM" in
+        macOS)
+            if command_exists brew; then
+                brew install starship
+                print_success "Starship installed via Homebrew"
+            else
+                print_warning "Homebrew not found. Install Starship manually:"
+                echo "  brew install starship"
+            fi
+            ;;
+        Linux|WSL)
+            curl -sS https://starship.rs/install.sh | sh -s -- -y
+            print_success "Starship installed"
+            ;;
+        *)
+            print_warning "Unknown platform. Install Starship manually from https://starship.rs"
+            ;;
+    esac
+}
+
+# ============================================================================
+# Install fzf (required for vim fuzzy finding)
+# ============================================================================
+
+install_fzf() {
+    print_step "Installing fzf..."
+
+    if command_exists fzf; then
+        print_success "fzf already installed ($(fzf --version))"
+        return
+    fi
+
+    case "$PLATFORM" in
+        macOS)
+            if command_exists brew; then
+                brew install fzf
+                print_success "fzf installed via Homebrew"
+            else
+                print_warning "Homebrew not found. Install fzf manually:"
+                echo "  brew install fzf"
+            fi
+            ;;
+        Linux|WSL)
+            if command_exists apt-get; then
+                sudo apt-get update && sudo apt-get install -y fzf
+                print_success "fzf installed via apt"
+            elif command_exists yum; then
+                sudo yum install -y fzf
+                print_success "fzf installed via yum"
+            else
+                # Fallback to git installation
+                if [ ! -d "$HOME/.fzf" ]; then
+                    git clone --depth 1 https://github.com/junegunn/fzf.git "$HOME/.fzf"
+                    "$HOME/.fzf/install" --all
+                    print_success "fzf installed via git"
+                else
+                    print_success "fzf already installed via git"
+                fi
+            fi
+            ;;
+        *)
+            print_warning "Unknown platform. Install fzf manually"
+            ;;
+    esac
+}
+
+# ============================================================================
+# Install fd (fast find alternative)
+# ============================================================================
+
+install_fd() {
+    print_step "Installing fd..."
+
+    if command_exists fd || command_exists fdfind; then
+        print_success "fd already installed"
+        return
+    fi
+
+    case "$PLATFORM" in
+        macOS)
+            if command_exists brew; then
+                brew install fd
+                print_success "fd installed via Homebrew"
+            else
+                print_warning "Homebrew not found. Install fd manually:"
+                echo "  brew install fd"
+            fi
+            ;;
+        Linux|WSL)
+            if command_exists apt-get; then
+                sudo apt-get update && sudo apt-get install -y fd-find
+                # Create symlink if it doesn't exist
+                if [ ! -f "$HOME/.local/bin/fd" ]; then
+                    mkdir -p "$HOME/.local/bin"
+                    ln -sf "$(which fdfind)" "$HOME/.local/bin/fd"
+                fi
+                print_success "fd installed via apt"
+            elif command_exists yum; then
+                sudo yum install -y fd-find
+                print_success "fd installed via yum"
+            else
+                print_warning "Package manager not found. Install fd manually"
+            fi
+            ;;
+        *)
+            print_warning "Unknown platform. Install fd manually"
+            ;;
+    esac
+}
+
+# ============================================================================
+# Install bat (better cat with syntax highlighting)
+# ============================================================================
+
+install_bat() {
+    print_step "Installing bat..."
+
+    if command_exists bat || command_exists batcat; then
+        print_success "bat already installed"
+        return
+    fi
+
+    case "$PLATFORM" in
+        macOS)
+            if command_exists brew; then
+                brew install bat
+                print_success "bat installed via Homebrew"
+            else
+                print_warning "Homebrew not found. Install bat manually:"
+                echo "  brew install bat"
+            fi
+            ;;
+        Linux|WSL)
+            if command_exists apt-get; then
+                sudo apt-get update && sudo apt-get install -y bat
+                # Create symlink if it doesn't exist (Ubuntu calls it batcat)
+                if [ ! -f "$HOME/.local/bin/bat" ] && command_exists batcat; then
+                    mkdir -p "$HOME/.local/bin"
+                    ln -sf "$(which batcat)" "$HOME/.local/bin/bat"
+                fi
+                print_success "bat installed via apt"
+            elif command_exists yum; then
+                sudo yum install -y bat
+                print_success "bat installed via yum"
+            else
+                print_warning "Package manager not found. Install bat manually"
+            fi
+            ;;
+        *)
+            print_warning "Unknown platform. Install bat manually"
+            ;;
+    esac
+}
+
+# ============================================================================
+# Install Go language server (gopls)
+# ============================================================================
+
+install_gopls() {
+    if ! command_exists go; then
+        print_warning "Go not installed, skipping gopls"
+        return
+    fi
+
+    print_step "Installing gopls (Go language server)..."
+
+    if command_exists gopls; then
+        print_success "gopls already installed"
+        return
+    fi
+
+    go install golang.org/x/tools/gopls@latest
+    print_success "gopls installed"
+}
+
+# ============================================================================
+# Install GitHub CLI (gh)
+# ============================================================================
+
+install_gh() {
+    print_step "Installing GitHub CLI (gh)..."
+
+    if command_exists gh; then
+        print_success "GitHub CLI already installed ($(gh --version | head -n1))"
+        return
+    fi
+
+    case "$PLATFORM" in
+        macOS)
+            if command_exists brew; then
+                brew install gh
+                print_success "GitHub CLI installed via Homebrew"
+            else
+                print_warning "Homebrew not found. Install GitHub CLI manually:"
+                echo "  brew install gh"
+            fi
+            ;;
+        Linux|WSL)
+            if command_exists apt-get; then
+                # Install from official GitHub CLI repository
+                print_step "Adding GitHub CLI repository..."
+                curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+                sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+                echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+
+                print_step "Installing GitHub CLI..."
+                sudo apt-get update
+                sudo apt-get install -y gh
+                print_success "GitHub CLI installed via official repository"
+            elif command_exists yum; then
+                sudo yum install -y 'dnf-command(config-manager)'
+                sudo yum-config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
+                sudo yum install -y gh
+                print_success "GitHub CLI installed via yum"
+            else
+                print_warning "Package manager not found. Install GitHub CLI manually"
+            fi
+            ;;
+        *)
+            print_warning "Unknown platform. Install GitHub CLI manually from https://cli.github.com"
+            ;;
+    esac
+}
+
+# ============================================================================
 # Install Optional Tools
 # ============================================================================
 
-prompt_optional_tools() {
-    print_step "Optional Tools (recommended)"
-    echo ""
-    echo "Install these tools for enhanced functionality:"
-    echo ""
+# Removed prompt_optional_tools - fd and bat are now installed automatically
 
-    # fd
-    if ! command_exists fd; then
-        echo -e "${BLUE}fd (fast find):${NC}"
-        case "$PLATFORM" in
-            macOS)
-                echo "  brew install fd"
-                ;;
-            Linux|WSL)
-                echo "  sudo apt-get install fd-find"
-                echo "  or"
-                echo "  sudo yum install fd-find"
-                ;;
-        esac
-        echo ""
+# ============================================================================
+# Ensure ~/.local/bin is in PATH
+# ============================================================================
+
+ensure_local_bin_in_path() {
+    # Check if ~/.local/bin exists
+    if [ ! -d "$HOME/.local/bin" ]; then
+        return
     fi
 
-    # bat
-    if ! command_exists bat; then
-        echo -e "${BLUE}bat (better cat with syntax highlighting):${NC}"
-        case "$PLATFORM" in
-            macOS)
-                echo "  brew install bat"
-                ;;
-            Linux|WSL)
-                echo "  sudo apt-get install bat"
-                echo "  or"
-                echo "  sudo yum install bat"
-                ;;
-        esac
-        echo ""
+    # Check if ~/.local/bin is already in PATH
+    if echo "$PATH" | grep -q "$HOME/.local/bin"; then
+        return
     fi
 
-    echo ""
-    echo -e "${BLUE}Kubernetes tools (kubectx, kubens, kpoof):${NC}"
-    echo "  Run: ./install-k8s.sh"
-    echo ""
+    # Add to bashrc if not present
+    if [ -f "$HOME/.bashrc" ] && ! grep -q '.local/bin' "$HOME/.bashrc" 2>/dev/null; then
+        echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.bashrc"
+        print_success "Added ~/.local/bin to PATH in .bashrc"
+    fi
 
-    echo "Press Enter to continue..."
-    read -r
+    # Add to zshrc if not present
+    if [ -f "$HOME/.zshrc" ] && ! grep -q '.local/bin' "$HOME/.zshrc" 2>/dev/null; then
+        echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.zshrc"
+        print_success "Added ~/.local/bin to PATH in .zshrc"
+    fi
+
+    # Update current session
+    export PATH="$HOME/.local/bin:$PATH"
 }
 
 # ============================================================================
@@ -613,13 +1089,60 @@ main() {
 
     detect_platform
     check_prerequisites
+
+    echo ""
+    echo "============================================================================"
+    echo "  Setting up Zsh"
+    echo "============================================================================"
+    echo ""
+
+    # Install and set Zsh as default shell
+    install_zsh
+    install_oh_my_zsh
+    set_zsh_as_default
+
+    echo ""
+    echo "============================================================================"
+    echo "  Installing Core Dependencies"
+    echo "============================================================================"
+    echo ""
+
+    # Install core dependencies first
+    install_nodejs
+    install_python
+    install_go
+    install_starship
+    install_fzf
+    install_ripgrep
+    install_tree
+    install_fd
+    install_bat
+    install_gh
+
+    # Ensure ~/.local/bin is in PATH (for fd and bat symlinks on Ubuntu)
+    ensure_local_bin_in_path
+
+    echo ""
+    echo "============================================================================"
+    echo "  Installing Language Servers"
+    echo "============================================================================"
+    echo ""
+
+    # Install language servers
+    install_gopls
+
+    echo ""
+    echo "============================================================================"
+    echo "  Configuring Dotfiles"
+    echo "============================================================================"
+    echo ""
+
     backup_existing_config
     create_symlinks
+    configure_git_merge_tool
     install_vim_plug
     install_vim_plugins
     install_coc_extensions
-    install_ripgrep
-    install_tree
 
     echo ""
     echo "============================================================================"
@@ -627,34 +1150,39 @@ main() {
     echo "============================================================================"
     echo ""
 
-    print_success "Vim is configured and ready to use!"
+    print_success "All dependencies and vim configuration installed!"
     echo ""
 
-    # Prompt for optional installations
+    # Prompt for additional language servers
     prompt_language_servers
     prompt_nerd_fonts
-    prompt_optional_tools
 
     echo ""
     echo "============================================================================"
     echo "  Next Steps"
     echo "============================================================================"
     echo ""
-    echo "1. Launch vim to finish installing CoC extensions"
-    echo "2. Install language servers for autocompletion (see above)"
-    echo "3. Install Nerd Fonts for file icons (see above)"
-    echo "4. Check the README for key mappings and usage"
+    echo "1. RESTART YOUR TERMINAL or log out and back in (to activate Zsh and PATH changes)"
+    echo "2. Launch vim to finish installing CoC extensions"
+    echo "3. Install additional language servers if needed (see above)"
+    echo "4. Install Nerd Fonts for file icons (see above)"
+    echo "5. Check the README for key mappings and usage"
     echo ""
-    echo "Key features:"
+    echo "Shell Configuration:"
+    echo "  - Zsh is now your default shell with Starship prompt"
+    echo "  - Configuration: ~/.zshrc"
+    echo "  - Prompt config: ~/.config/starship.toml"
+    echo ""
+    echo "Vim Key Features:"
     echo "  - Use ; instead of : for commands"
-    echo "  - Leader key is \` (backtick)"
-    echo "  - \`e to toggle NERDTree"
-    echo "  - \`f for project-wide text search (ripgrep)"
+    echo "  - Leader key is , (comma)"
+    echo "  - ,n to toggle NERDTree"
+    echo "  - ,f for project-wide text search (ripgrep)"
     echo "  - <Ctrl-p> for fuzzy file search"
     echo "  - gd to go to definition"
     echo "  - K to show documentation"
     echo ""
-    print_success "Happy vimming!"
+    print_success "Happy vimming with Zsh!"
     echo ""
 }
 
