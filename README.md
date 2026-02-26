@@ -263,7 +263,8 @@ Leader key is set to `,` (comma)
 
 | Key | Action | Description |
 |-----|--------|-------------|
-| `gcc` | Toggle comment | Comment/uncomment line |
+| `///` | Toggle comment | Comment/uncomment line or selection |
+| `gcc` | Toggle comment | Comment/uncomment line (vim-commentary default) |
 | `gc{motion}` | Comment motion | Comment text object |
 | `ys{motion}{char}` | Surround with | Add surrounding chars |
 | `cs{old}{new}` | Change surrounding | Replace surrounding chars |
@@ -279,6 +280,11 @@ Leader key is set to `,` (comma)
 | `>` | Indent right (keeps selection) |
 | `J` | Move lines down |
 | `K` | Move lines up |
+| `p` | Paste over selection (clipboard preserved) |
+
+### Clipboard Behaviour
+
+`d`/`D` delete to the black hole register — your clipboard is never overwritten by deletes. Use `y`/`Y` to explicitly yank. Use `"dd` if you need the old behaviour for a single delete.
 
 ### Search
 
