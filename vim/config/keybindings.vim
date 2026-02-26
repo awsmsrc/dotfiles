@@ -247,6 +247,10 @@ nnoremap <leader>gl :Git log<CR>
 " gc{motion} to comment motion
 " gcap to comment a paragraph
 
+" /// to toggle comment on line or visual selection
+nmap /// gcc
+xmap /// gc
+
 " ============================================================================
 " Search and Replace
 " ============================================================================
@@ -268,9 +272,22 @@ nnoremap <leader>r :%s/\<<C-r><C-w>\>//g<Left><Left>
 vnoremap < <gv
 vnoremap > >gv
 
+" Paste over selection without overwriting clipboard
+xnoremap p "_dP
+
 " Move lines up/down
 vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
+
+" ============================================================================
+" Clipboard / Register Behaviour
+" ============================================================================
+
+" Send deleted text to black hole register (don't overwrite clipboard)
+" Use y/Y to explicitly yank when you want to copy
+nnoremap d "_d
+nnoremap D "_D
+vnoremap d "_d
 
 " ============================================================================
 " Normal Mode Enhancements
