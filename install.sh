@@ -211,6 +211,13 @@ backup_existing_config() {
         backed_up=true
     fi
 
+    if [ -L "$HOME/.zshenv" ]; then
+        mkdir -p "$BACKUP_DIR"
+        mv "$HOME/.zshenv" "$BACKUP_DIR/"
+        print_success "Backed up .zshenv"
+        backed_up=true
+    fi
+
     if [ -L "$HOME/.config/starship.toml" ]; then
         mkdir -p "$BACKUP_DIR"
         mv "$HOME/.config/starship.toml" "$BACKUP_DIR/"
@@ -247,7 +254,7 @@ create_symlinks() {
     echo ""
     print_step "Shell Configuration"
     echo "Would you like to use the dotfiles shell configurations?"
-    echo "This will symlink .bashrc, .zshrc, and starship.toml"
+    echo "This will symlink .bashrc, .zshrc, .zshenv, and starship.toml"
     echo ""
     echo "⚠️  WARNING: This will replace your existing shell configs!"
     echo "   Current configs will be backed up if they exist."
@@ -268,12 +275,21 @@ create_symlinks() {
             print_success "Backed up existing .zshrc"
         fi
 
+        if [ -f "$HOME/.zshenv" ] && [ ! -L "$HOME/.zshenv" ]; then
+            mkdir -p "$BACKUP_DIR"
+            mv "$HOME/.zshenv" "$BACKUP_DIR/"
+            print_success "Backed up existing .zshenv"
+        fi
+
         # Create symlinks for shell configs
         ln -sf "$DOTFILES_DIR/.bashrc" "$HOME/.bashrc"
         print_success "~/.bashrc -> $DOTFILES_DIR/.bashrc"
 
         ln -sf "$DOTFILES_DIR/.zshrc" "$HOME/.zshrc"
         print_success "~/.zshrc -> $DOTFILES_DIR/.zshrc"
+
+        ln -sf "$DOTFILES_DIR/.zshenv" "$HOME/.zshenv"
+        print_success "~/.zshenv -> $DOTFILES_DIR/.zshenv"
 
         # Starship configuration
         mkdir -p "$HOME/.config"
@@ -1061,6 +1077,11 @@ uninstall() {
     if [ -L "$HOME/.zshrc" ]; then
         rm "$HOME/.zshrc"
         print_success "Removed ~/.zshrc symlink"
+    fi
+
+    if [ -L "$HOME/.zshenv" ]; then
+        rm "$HOME/.zshenv"
+        print_success "Removed ~/.zshenv symlink"
     fi
 
     if [ -L "$HOME/.config/starship.toml" ]; then
