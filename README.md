@@ -95,13 +95,13 @@ The install script automatically:
 4. **Installs all required tools**: Node.js, Python3, Go, fzf, ripgrep, tree, fd, bat
 5. **Installs gopls** (Go language server)
 6. Backs up existing configuration
-7. Creates symbolic links for vim and shell configs
+7. Creates symbolic links for vim and shell configs, including a minimal `.zshenv`
 8. Configures git merge tool
 9. Installs vim-plug and all plugins
 10. Installs CoC extensions
 11. Configures PATH for all installed tools
 
-**After Installation:** Restart your terminal to activate Zsh and all PATH changes.
+**After Installation:** Restart your terminal to activate Zsh and all PATH changes. The optional shell config install also links `.zshenv` so non-interactive zsh commands, including SSH automation, can find tools installed in `~/.local/bin`.
 
 **Note:** The shell configuration (zshrc, starship) installation is optional. The script will prompt you before replacing your existing shell configs.
 
